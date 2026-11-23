@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A small movie showcase with instant client-side search, built with vanilla JavaScript.">
+  <title>أفلام رائعة | Movie Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Poppins,Tahoma,Arial,sans-serif; background:#f5f6fa; color:#252638; }
+    header { padding:38px 18px 30px; text-align:center; background:#fff; box-shadow:0 4px 18px #15152a12; }
+    h1 { margin:0 0 18px; color:#d94343; font-size:clamp(1.8rem,4vw,2.6rem); }
+    #search { width:min(420px,100%); padding:13px 18px; border:2px solid #e5a0a0; border-radius:30px; font:inherit; outline-offset:3px; }
+    #movies { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,220px)); justify-content:center; gap:22px; padding:30px 18px; }
+    .movie { background:#fff; padding:14px; border-radius:14px; box-shadow:0 5px 20px #17172a12; transition:transform .2s,box-shadow .2s; }
+    .movie:hover { transform:translateY(-5px); box-shadow:0 10px 25px #17172a20; }
+    .movie img { display:block; width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:10px; background:#eee; }
+    .movie h2 { min-height:3em; margin:12px 0 8px; font-size:1.05rem; color:#c83d3d; }
+    .watch-button { display:inline-block; padding:9px 15px; border-radius:24px; background:#d94343; color:white; text-decoration:none; font-size:.9rem; }
+    .watch-button:hover { background:#ad2929; }
+    #emptyState { text-align:center; color:#777; padding:20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>أفلام رائعة</h1>
+    <label for="search">ابحث عن فيلم</label><br>
+    <input type="search" id="search" placeholder="اكتب اسم الفيلم..." autocomplete="off">
+  </header>
+  <main>
+    <section id="movies" aria-label="قائمة الأفلام"></section>
+    <p id="emptyState" hidden>مفيش أفلام مطابقة لبحثك.</p>
+  </main>
+
+  <script>
+    const movies = [
+      { title: 'The Avengers', poster: '/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg', trailer: 'https://www.youtube.com/watch?v=eOrNdBpGMv8' },
+      { title: 'Inception', poster: '/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg', trailer: 'https://www.youtube.com/watch?v=YoHD9XEInc0' },
+      { title: 'The Dark Knight', poster: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg', trailer: 'https://www.youtube.com/watch?v=EXeTwQWrcwY' },
+      { title: 'Interstellar', poster: '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', trailer: 'https://www.youtube.com/watch?v=zSWdZVtXT7E' },
+      { title: 'Joker', poster: '/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg', trailer: 'https://www.youtube.com/watch?v=zAGVQLHvwOY' }
+    ];
+
+    const moviesContainer = document.getElementById('movies');
+    const searchInput = document.getElementById('search');
+    const emptyState = document.getElementById('emptyState');
+    const posterBase = 'https://image.tmdb.org/t/p/w500';
+
+    function renderMovies(list) {
+      moviesContainer.replaceChildren();
+      emptyState.hidden = list.length !== 0;
+
+      list.forEach((movie) => {
+        const card = document.createElement('article');
+        const image = document.createElement('img');
+        const title = document.createElement('h2');
+        const link = document.createElement('a');
+
+        card.className = 'movie';
+        image.src = movie.poster ? posterBase + movie.poster : 'https://placehold.co/400x600?text=No+Poster';
+        image.alt = movie.title + ' poster';
+        image.loading = 'lazy';
+        image.onerror = () => { image.onerror = null; image.src = 'https://placehold.co/400x600?text=No+Poster'; };
+        title.textContent = movie.title;
+        link.className = 'watch-button';
+        link.href = movie.trailer;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'شاهد الإعلان';
+
+        card.append(image, title, link);
+        moviesContainer.appendChild(card);
+      });
+    }
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLocaleLowerCase();
+      renderMovies(movies.filter(movie => movie.title.toLocaleLowerCase().includes(query)));
+    });
+
+    renderMovies(movies);
+  </script>
+</body>
+</html>
